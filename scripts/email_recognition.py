@@ -11,26 +11,26 @@ import pandas as pd
 from sklearn.svm import SVC
 from sklearn.neural_network import MLPClassifier  
 import numpy as np
-
+import pickle
 
 nlp = en_core_web_sm.load()
 
 class OrderEmailRecognition:
-	def __init__(self):
-		self.vectorizer = pickle.load(open("tfidf.pkl", "rb"))
-		self.model = pickle.load(open("svm_model.pkl", "rb"))
-	
-	def isDocOrderNotification(self, raw_doc):
-		x_input = self.buildTFIDF(raw_doc)
-		return self.model.predict(x_input)[0]
+    def __init__(self):
+        self.vectorizer = pickle.load(open("tfidf.pkl", "rb"))
+        self.model = pickle.load(open("svm_model.pkl", "rb"))
 
-	def buildTFIDF(self, raw_doc):
-		doc = remove_entity_words(raw_text)
-		corpus = [doc]
-		return self.vectorizer.transform(corpus)
+    def isDocOrderNotification(self, raw_doc):
+        x_input = self.buildTFIDF(raw_doc)
+        return self.model.predict(x_input)[0]
 
-	def extractEntities(self, raw_doc):
-		return nlp(raw_doc).ents
+    def buildTFIDF(self, raw_doc):
+        doc = remove_entity_words(raw_doc)
+        corpus = [doc]
+        return self.vectorizer.transform(corpus)
+
+    def extractEntities(self, raw_doc):
+        return nlp(raw_doc).ents
 
 def clean_raw_text(raw_text):
     soup = BeautifulSoup(raw_text, 'html.parser')
@@ -48,7 +48,7 @@ def remove_entity_words(raw_text):
     for entity in tags.ents:
         tag = entity.label_
         text = entity.text
-#         print(tag, text)
+    #         print(tag, text)
         if tag in ['PERSON', 'ORG', 'EVENT', 'GPE', 'NORP', 'PRODUCT', 'MONEY']:
             input_text = input_text.replace(text, tag)
     return input_text
