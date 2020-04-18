@@ -3,37 +3,64 @@ from email_rpa import *
 from urllib import request, parse
 import json
 import numpy as np
-# Posting to a Slack channel
-def send_message_to_slack(text):
-	post = {"text": "{0}".format(text)}
-	try:
-		json_data = json.dumps(post)
-		req = request.Request("https://hooks.slack.com/services/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",
-			data=json_data.encode('ascii'),
-			headers={'Content-Type': 'application/json'})
-		resp = request.urlopen(req)
-	except Exception as em:
-		print("EXCEPTION: " + str(em))
+import argparse
 
-def build_notif_message(email_headline):
-	return 'New order email has arrived. Email: {}'.format(email_headline[:100] + '...')
+def get_slack_url():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--slack_url', help='Slack bot url to send a message to', dest='slack_url')
+    args = parser.parse_args()
+    if args.slack_url == None:
+        return ''
+    return  args.slack_url
+
+# Posting to a Slack channel
+def send_message_to_slack(text, slack_url):
+    if slack_url == '':
+        return
+
+    post = {"text": "{0}".format(text)}
+    try:
+        json_data = json.dumps(post)
+        req = request.Request(slack_url,
+            data=json_data.encode('ascii'),
+            headers={'Content-Type': 'application/json'})
+        resp = request.urlopen(req)
+    except Exception as em:
+        print("EXCEPTION: " + str(em))
+
+def build_notif_message(order_text, email_headline):
+    return 'New order email: {}. Email: {}'.format(order_text, email_headline[:100] + '...')
 
 if __name__ == '__main__' :
     with open("./email_info_issproject.json",'r') as load_f:
         email_info = json.load(load_f)
+
     account = email_info['email']
     password = email_info['password']
+    slack_url = get_slack_url()
+    print('Slack url is {}'.format(slack_url))
+
     model = OrderEmailRecognition()
     rpa = create_rpa_email(account, password)
 
-    emails = rpa.start_get_emails()
+
+    rpa.open_email()
+    emails = rpa.extract_email_headlines(limit=30)
+    count = 0
     for email in emails:
-        doc = email[1]
-        if not model.isDocOrderNotification(doc):
-            print('email {} is not order notification'.format(doc[:100]))
+        conv_id, doc, is_unread = email[0], email[1], email[2]
+        if not is_unread or not model.isDocOrderNotification(doc) :
+    #            print('email {} is not order notification'.format(doc[:100]))
             continue
-#        print('email {} is order notification'.format(doc))
-        notif_message = build_notif_message(doc)
-        send_message_to_slack(notif_message)
+    #        print('email {} is order notification'.format(doc))
+        raw_content = rpa.get_email_content(conv_id, is_unread)
+        order_text = model.extractOrderStatusRelatedText(raw_content)
+        notif_message = build_notif_message(order_text, doc)
+        print(notif_message)
+        print('========================================')
+        send_message_to_slack(notif_message, slack_url)
+        count += 1
+    print('Total email sent : {}'.format(count))
     rpa.close()
+    print('Closed and finished the program')
 

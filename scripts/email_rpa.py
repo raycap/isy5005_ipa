@@ -7,10 +7,9 @@ class OutlookRPA:
         self.account = account
         self.password = password
 
-    def start_get_emails(self):
+    def open_email(self):
         t.init(visual_automation = False)
         self.login()
-        return self.extract_email_headlines()
     
     def login(self):
         t.url('https://login.live.com/login.srf?wa=wsignin1.0&rpsnv=13&ct=1586073207&rver=7.0.6737.0&wp=MBI_SSL&wreply=https%3a%2f%2foutlook.live.com%2fowa%2f%3fnlp%3d1%26RpsCsrfState%3d6590c65e-2e3f-b1ed-bda9-2c5e901a9000&id=292841&aadredir=1&whr=outlook.sg&CBCXT=out&lw=1&fl=dob%2cflname%2cwld&cobrandid=90015')
@@ -30,9 +29,12 @@ class OutlookRPA:
             if not wait_element(item_xpath):
                 print('email {} is not present'.format(i))
                 break
-            email_id = t.read(item_xpath + '/@data-convid')
-            email_headline = t.read(item_xpath + '/@aria-label')
-            list_item.append((email_id, email_headline))
+            hover('(//div[contains(@class,"showHoverActionsOnHover")])[{}]'.format(i+1))
+            email_id = read(item_xpath + '/@data-convid')
+            email_headline = read(item_xpath + '/@aria-label')
+            email_classes = read('(//div[contains(@class,"showHoverActionsOnHover")])[{}]/@class'.format(i+1))
+            email_unread = is_email_unread(email_classes)
+            list_item.append((email_id, email_headline, email_unread))
         return np.array(list_item)
 
     def search_keyword(self, keyword):
@@ -42,6 +44,27 @@ class OutlookRPA:
             click(clear_button)
             type_into('//input[contains(@aria-label, "Search")]', keyword )
             click(search_button)
+            
+    def get_email_content(self,email_conv_id, is_unread):
+        click('//div[@data-convid="{}"]'.format(email_conv_id))
+        raw_text = read('//div[@class="wide-content-host"]')
+        if is_unread:
+            self.mark_as_unread()
+        self.back_to_homelist()
+        return raw_text
+    
+    # mark email as unread in home 
+    def mark_as_unread(self):
+        click('//button[@aria-label="More mail actions"]')
+        t.wait(1)
+        click('//button[@name="Mark as unread"]')
+        t.wait(1)
+        
+    # this is go back from content to homelist
+    def back_to_homelist(self):
+        click('//button[@aria-label="Close"]')
+        t.wait(1)
+        
     def close(self):
         t.close()
 
@@ -50,16 +73,15 @@ class GmailRPA:
         self.account = account
         self.password = password
 
-    def start_get_emails(self):
+    def open_email(self):
         t.init(visual_automation = False)
         self.login()
-        return self.extract_email_headlines()
 
     def login(self):
         ## TODO ::
         return
 
-    def extract_email_headlines(self):
+    def extract_email_headlines(self, limit=100):
         list_item = []
         listbox_xpath = '(//table[@class="F cf zt"])[2]'
         if limit == 0 :
@@ -73,7 +95,7 @@ class GmailRPA:
                 i = 1
                 continue
             email_id = ""
-            email_headline = clean_raw_text(read(item_xpath))
+            email_headline = read(item_xpath)
             list_item.append((email_id, email_headline))
             i += 1
         return np.array(list_item)
@@ -114,6 +136,10 @@ def read(xpath):
     wait_element(xpath)
     return t.read(xpath)
 
+def hover(xpath):
+    wait_element(xpath)
+    return t.hover(xpath)
+
 def wait_element(xpath):
     for i in range(10):
         if t.present(xpath):
@@ -121,8 +147,10 @@ def wait_element(xpath):
         t.wait(1)
     return False
 
-def get_email_content(i):
-    listbox_xpath = '//div[@role="listbox"]'
-    item_xpath = '(' + listbox_xpath + '//div[@role="option"])[{}]'.format(i)
-    click(item_xpath)
-    return clean_raw_text(read('//div[@class="rps_25d6"]'))
+def is_email_unread(class_str):
+    class_n = class_str.split('showHoverActionsOnHover')
+    if len(class_n) <2:
+        return False
+    if class_n[1] != '' :
+        return True
+    return False

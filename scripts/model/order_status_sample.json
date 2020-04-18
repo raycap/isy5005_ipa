@@ -1,0 +1,17 @@
+[
+"your order is being processed.",
+"your order has been confirmed.",
+"your order has been shipped.",
+"_ORG_ has received your order.",
+"your order has been ackowledged by _ORG_",
+"your order has been ackowledged by _PERSON_",
+"we have received your order.",
+"we are glad to inform you that your order _GPE_ has been fully delivered",
+"Your Order _GPE_ has been placed on _DATE_.",
+"Item from your order _GPE_ has been Shipped",
+"Item(s) from your order _GPE_ has been Shipped",
+"Your order will be shipped in _NUMBER_ business days",
+"your package is on the way",
+"your package will arrive soon",
+"your package has shipped out"
+]
