@@ -8,9 +8,11 @@ using pip
 pip install -r requirements.txt
 python -m spacy download en_core_web_sm
 ```
+
 using anaconda
 ```
 conda create -n isy5005_ipa python=3.7.1
+conda activate isy5005_ipa
 pip install -r requirements.txt
 python -m spacy download en_core_web_sm
 ```

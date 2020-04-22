@@ -29,10 +29,10 @@ class OutlookRPA:
             if not wait_element(item_xpath):
                 print('email {} is not present'.format(i))
                 break
-            hover('(//div[contains(@class,"showHoverActionsOnHover")])[{}]'.format(i+1))
+            hover('(//div[contains(@class,"showHoverActionsOnHover")])[{}]'.format(i))
             email_id = read(item_xpath + '/@data-convid')
             email_headline = read(item_xpath + '/@aria-label')
-            email_classes = read('(//div[contains(@class,"showHoverActionsOnHover")])[{}]/@class'.format(i+1))
+            email_classes = read('(//div[contains(@class,"showHoverActionsOnHover")])[{}]/@class'.format(i))
             email_unread = is_email_unread(email_classes)
             list_item.append((email_id, email_headline, email_unread))
         return np.array(list_item)

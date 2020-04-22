@@ -3,6 +3,8 @@ from spacy import displacy
 from collections import Counter
 import en_core_web_sm
 import nltk
+nltk.download('punkt')
+
 import re
 from bs4 import BeautifulSoup
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
@@ -13,6 +15,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 import pickle
 import json
+
 
 nlp = en_core_web_sm.load()
 
