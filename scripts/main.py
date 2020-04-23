@@ -45,15 +45,19 @@ if __name__ == '__main__' :
 
 
     rpa.open_email()
-    emails = rpa.extract_email_headlines(limit=30)
+    emails = rpa.extract_email_headlines(limit=14)
     count = 0
     for email in emails:
-        conv_id, doc, is_unread = email[0], email[1], email[2]
-        if not is_unread or not model.isDocOrderNotification(doc) :
-    #            print('email {} is not order notification'.format(doc[:100]))
+        item_xpath, doc, is_unread = email[0], email[1], email[2]
+        print(doc)
+        print(is_unread)
+        if not is_unread:
+            print('email has been read')
             continue
-    #        print('email {} is order notification'.format(doc))
-        raw_content = rpa.get_email_content(conv_id, is_unread)
+        if not model.isDocOrderNotification(doc):
+            print('is not order email')
+            continue
+        raw_content = rpa.get_email_content(item_xpath, is_unread)
         order_text = model.extractOrderStatusRelatedText(raw_content)
         notif_message = build_notif_message(order_text, doc)
         print(notif_message)

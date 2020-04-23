@@ -30,12 +30,11 @@ class OutlookRPA:
                 print('email {} is not present'.format(i))
                 break
             hover('(//div[contains(@class,"showHoverActionsOnHover")])[{}]'.format(i))
-            email_id = read(item_xpath + '/@data-convid')
             email_headline = read(item_xpath + '/@aria-label')
             email_classes = read('(//div[contains(@class,"showHoverActionsOnHover")])[{}]/@class'.format(i))
             email_unread = is_email_unread(email_classes)
-            list_item.append((email_id, email_headline, email_unread))
-        return np.array(list_item)
+            list_item.append([item_xpath, email_headline, email_unread])
+        return list_item
 
     def search_keyword(self, keyword):
         clear_button  = '//button[@aria-label="Exit Search"]'
@@ -45,8 +44,8 @@ class OutlookRPA:
             type_into('//input[contains(@aria-label, "Search")]', keyword )
             click(search_button)
             
-    def get_email_content(self,email_conv_id, is_unread):
-        click('//div[@data-convid="{}"]'.format(email_conv_id))
+    def get_email_content(self,item_xpath, is_unread):
+        click(item_xpath)
         raw_text = read('//div[@class="wide-content-host"]')
         if is_unread:
             self.mark_as_unread()
@@ -55,9 +54,16 @@ class OutlookRPA:
     
     # mark email as unread in home 
     def mark_as_unread(self):
-        click('//button[@aria-label="More mail actions"]')
-        t.wait(1)
-        click('//button[@name="Mark as unread"]')
+        more_action_xpath = '//button[@aria-label="More mail actions"]'
+        mark_as_unread_xpath = '//button[@name="Mark as unread"]'
+        mark_as_read_xpath = '//button[@name="Mark as read"]'
+        click(more_action_xpath)
+        if present(mark_as_read_xpath, timeout=3):
+            click(mark_as_read_xpath)
+            t.wait(1)
+            click(more_action_xpath)
+        if present(mark_as_unread_xpath, timeout=3):
+            click(mark_as_unread_xpath)            
         t.wait(1)
         
     # this is go back from content to homelist
@@ -129,8 +135,8 @@ def click(xpath):
     wait_element(xpath)
     t.click(xpath)
 
-def present(xpath):
-    return wait_element(xpath)
+def present(xpath, timeout=7):
+    return wait_element(xpath, timeout=timeout)
 
 def read(xpath):
     wait_element(xpath)
@@ -140,8 +146,8 @@ def hover(xpath):
     wait_element(xpath)
     return t.hover(xpath)
 
-def wait_element(xpath):
-    for i in range(10):
+def wait_element(xpath, timeout=7):
+    for i in range(timeout):
         if t.present(xpath):
             return True
         t.wait(1)
