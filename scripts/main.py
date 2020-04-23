@@ -45,7 +45,7 @@ if __name__ == '__main__' :
 
 
     rpa.open_email()
-    emails = rpa.extract_email_headlines(limit=14)
+    emails = rpa.extract_email_headlines(limit=50)
     count = 0
     for email in emails:
         item_xpath, doc, is_unread = email[0], email[1], email[2]
