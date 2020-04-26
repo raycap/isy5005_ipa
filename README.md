@@ -26,7 +26,7 @@ In this project, by applying the knowledge of IPA, we have looked into automate 
 
 ---
 ## SECTION 5 : USER GUIDE
-### Pre-Requisite
+### Prerequisite
 
 Please prepare below items before we can start with the application:
 - Valid hotmail/outlook/gmail (email and password)
