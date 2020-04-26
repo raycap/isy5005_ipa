@@ -84,14 +84,15 @@ class GmailRPA:
         self.login()
 
     def login(self):
-        ## TODO ::
+        login_stackoverflow(self.account,self.password)
+        t.url('https://www.gmail.com')
         return
 
     def extract_email_headlines(self, limit=100):
         list_item = []
         listbox_xpath = '(//table[@class="F cf zt"])[2]'
         if limit == 0 :
-            limit = 1000
+            limit = 50
         i = 1
         while len(list_item) < limit:
             item_xpath = '(' + listbox_xpath + '//tr)[{}]//td[@class="xY a4W"]'.format(i)
@@ -100,18 +101,39 @@ class GmailRPA:
                 click(older_button)
                 i = 1
                 continue
-            email_id = ""
-            email_headline = read(item_xpath)
-            list_item.append((email_id, email_headline))
+            t.hover(item_xpath)
+            email_id = item_xpath
+            email_headline = clean_raw_text(read(item_xpath))
+            header_text = read('(' + listbox_xpath + '//tr)[{}]//div[@class="afn"]'.format(i))
+            list_item.append((email_id, email_headline, is_gmail_unread(header_text)))
             i += 1
-        return np.array(list_item)
-
+        return list_item
+    
+    def get_email_content(self,item_xpath, is_unread):
+        click(item_xpath)
+        content = t.read('//div[@role="listitem"]')
+        t.hover('//div[contains(@title,"Mark as unread")]')
+        click('(//div[contains(@data-tooltip,"Mark as unread")])[2]')
+        return content
+    
     def close(self):
         t.close()
 
 
 
 ## UTILS
+
+def login_stackoverflow(account, password):
+    t.url('https://stackoverflow.com/users/login')
+    click('//button[@data-provider="google"]')
+    if wait_element('//div[@data-identifier="{}"]'.format(account)):
+        click('//div[@data-identifier="{}"]'.format(account))
+    else:
+        c = t.count('//div[@jsslot=""]//li')
+        click('(//div[@jsslot=""]//li)[{}]'.format(c))
+        type_into('//*[@type="email"]', account + '[enter]')
+    type_into('//*[@name="password"]', password + '[enter]')
+    return
 
 def create_rpa_email(account, password):
     if len(account.split('@')) != 2:
