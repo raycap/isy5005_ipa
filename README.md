@@ -28,10 +28,10 @@ In this project, by applying the knowledge of IPA, we have looked into automate 
 ## SECTION 5 : USER GUIDE
 ### Pre-Requisite
 
-Please have valid:
+Please prepare below items before we can start with the application:
 - Valid hotmail/outlook/gmail (email and password)
-- For gmail, please prepare stackoverflow account created with gmail sign in. We will use this as a way to log in to gmal.
-- Valid Slack bot url for notification purpse
+- For gmail, please prepare stackoverflow account created with gmail sign in. We will use this as a way to log in to gmail.
+- Valid Slack bot url for notification purpose
 
 ### Installment
 
