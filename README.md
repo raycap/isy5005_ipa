@@ -22,7 +22,7 @@ In this project, by applying the knowledge of IPA, we have looked into automate 
 ---
 ## SECTION 4 : VIDEO OF SYSTEM MODELLING & USE CASE DEMO
 
-[![Order Email Notification](http://img.youtube.com/vi/kF0tPmweUeU/0.jpg)](http://www.youtube.com/watch?v=kF0tPmweUeU)
+[![Order Email Notification](http://img.youtube.com/vi/juZ6AsPIpkI/0.jpg)](https://www.youtube.com/watch?v=juZ6AsPIpkI)
 
 ---
 ## SECTION 5 : USER GUIDE
@@ -57,6 +57,6 @@ python main.py --slack_url your_slack_bot_url
 
 ---
 ## SECTION 6 : PROJECT REPORT / PAPER
-`Order_Email_Notificaition.pdf` : <https://github.com/raycap/isy5005_ipa>
+`Order_Email_Notification.pdf` : <https://github.com/raycap/isy5005_ipa/report/isy5005_IPA_Group_8.pdf>
 
 ---
