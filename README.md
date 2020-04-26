@@ -57,6 +57,6 @@ python main.py --slack_url your_slack_bot_url
 
 ---
 ## SECTION 6 : PROJECT REPORT / PAPER
-`Order_Email_Notification.pdf` : <https://github.com/raycap/isy5005_ipa/report/isy5005_IPA_Group_8.pdf>
+`Order_Email_Notification.pdf` : <https://github.com/raycap/isy5005_ipa/blob/master/report/isy5005_IPA_Group_8.pdf>
 
 ---
